@@ -22,8 +22,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![GPLv3 License][license-shield]][license-url]
 
 
 
@@ -174,18 +173,16 @@ Project Link: [https://github.com/ZhichGaming/Project-Raphael](https://github.co
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
+[contributors-shield]: https://img.shields.io/github/contributors/ZhichGaming/Project-Raphael.svg?style=for-the-badge
+[contributors-url]: https://github.com/ZhichGaming/Project-Raphael/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/ZhichGaming/Project-Raphael.svg?style=for-the-badge
+[forks-url]: https://github.com/ZhichGaming/Project-Raphael/network/members
+[stars-shield]: https://img.shields.io/github/stars/ZhichGaming/Project-Raphael.svg?style=for-the-badge
+[stars-url]: https://github.com/ZhichGaming/Project-Raphael/stargazers
+[issues-shield]: https://img.shields.io/github/issues/ZhichGaming/Project-Raphael.svg?style=for-the-badge
+[issues-url]: https://github.com/ZhichGaming/Project-Raphael/issues
+[license-shield]: https://img.shields.io/github/license/ZhichGaming/Project-Raphael.svg?style=for-the-badge
+[license-url]: https://github.com/ZhichGaming/
 [product-screenshot]: images/screenshot.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
