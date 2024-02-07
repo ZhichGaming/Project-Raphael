@@ -22,7 +22,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![GPLv3 License][license-shield]][license-url]
+[![GPL-3.0 License][license-shield]][license-url]
 
 
 
@@ -36,16 +36,18 @@
 <h3 align="center">Project Raphael</h3>
 
   <p align="center">
-    For the end of year project, our plan is to create artificial intelligence that contains many functionalities. 
+    An AI-powered multi-platform app that can interact with the filesystem and execute commands. Built as our secondary 4 final CS project.
     <br />
     <!-- <a href="https://github.com/ZhichGaming/Project-Raphael"><strong>Explore the docs »</strong></a> -->
-    <br />
-    <br />
+    <!-- <br /> -->
+    <!-- <br /> -->
 <!--     <a href="https://github.com/github_username/repo_name">View Demo</a>
     · -->
     <a href="https://github.com/ZhichGaming/Project-Raphael/issues">Report Bug</a>
     ·
     <a href="https://github.com/ZhichGaming/Project-Raphael/issues">Request Feature</a>
+    ·
+    <a href="https://discord.gg/s8ZaKZfQgG">Discord</a>
   </p>
 </div>
 
@@ -84,7 +86,9 @@
 
 <!-- [![App Image][product-screenshot]](https://example.com) -->
 
-An AI-powered multi-platform app that can interact with the filesystem and execute commands. Built as our secondary 4 final CS project.
+This project is in developpment and the description may not conform to the final product. 
+
+Project Raphael aims to be an AI application with features like image processing, conversation, terminal access, etc. The application can be installed locally, using a local AI or a remote server, utilizing web requests for communication. The goal is a versatile AI application, with continuous development beyond the project deadline of the end of the school year. Contributions are welcome, whether it is for enhancing existing features or integrating third-party AIs.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -146,7 +150,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the GNU General Public License v3.0 (GPLv3). See `LICENSE` for more information.
+Distributed under the GNU General Public License v3.0 (GPL-3.0). See `LICENSE` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -156,8 +160,9 @@ Distributed under the GNU General Public License v3.0 (GPLv3). See `LICENSE` for
 ## Contact
 
 You can contact us through Discord or through email if you'd like.
-- @ZhichGaming - zhich - nick.zhicheng@gmail.com
-- @Nvadidivan - nvadidivan
+- ZhichGaming - zhich - nick.zhicheng@gmail.com
+- Nvadidivan - nvadidivan
+- DummyIsHere - dummy_______
 
 Project Link: [https://github.com/ZhichGaming/Project-Raphael](https://github.com/ZhichGaming/Project-Raphael)
 
