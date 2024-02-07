@@ -31,15 +31,15 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <!-- <img src="images/logo.png" alt="Logo" width="80" height="80"> -->
   </a>
 
 <h3 align="center">Project Raphael</h3>
 
   <p align="center">
-    ai
+    For the end of year project, our plan is to create artificial intelligence that contains many functionalities. 
     <br />
-    <a href="https://github.com/ZhichGaming/Project-Raphael"><strong>Explore the docs »</strong></a>
+    <!-- <a href="https://github.com/ZhichGaming/Project-Raphael"><strong>Explore the docs »</strong></a> -->
     <br />
     <br />
 <!--     <a href="https://github.com/github_username/repo_name">View Demo</a>
@@ -54,7 +54,7 @@
 
 <!-- TABLE OF CONTENTS -->
 <details>
-  <summary>Table of Contents2    q1Q2wsx</summary>
+  <summary>Table of Contents</summary>
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
@@ -83,7 +83,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<!-- [![App Image][product-screenshot]](https://example.com) -->
 
 An AI-powered multi-platform app that can interact with the filesystem and execute commands. Built as our secondary 4 final CS project.
 
@@ -95,12 +95,8 @@ An AI-powered multi-platform app that can interact with the filesystem and execu
 
 * [![Next][Next.js]][Next-url]
 * [![React][React.js]][React-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+* [![Tauri][Tauri]][Tauri-url]
+* [![Threejs][Threejs]][Threejs-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -109,42 +105,26 @@ An AI-powered multi-platform app that can interact with the filesystem and execu
 <!-- GETTING STARTED -->
 ## Getting Started
 
-tbd
+To get a local copy up and running follow these simple steps. Contact us through discord for more information.
 
 ### Prerequisites
 
-tbd
+- Git
+- Node Package Manager (NPM)
 
-### Installation
+### Running
+1. Navigate to the folder you want the project to be located in using terminal.
+2. Run `git clone https://github.com/ZhichGaming/Project-Raphael.git`.
+3. Run `npm i` to install dependancies.
+4. Install VScode extensions:
+	1. Tauri
+	2. rust-analyzer
+5. Run `npm run tauri dev`.
 
-tbd
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-tbd
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
-
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
+### Building
+- Run `npm run tauri build`.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -167,7 +147,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the GNU General Public License v3.0 (GPLv3). See `LICENSE` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -176,9 +156,11 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+You can contact us through Discord or through email if you'd like.
+- @ZhichGaming - zhich - nick.zhicheng@gmail.com
+- @Nvadidivan - nvadidivan
 
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/ZhichGaming/Project-Raphael](https://github.com/ZhichGaming/Project-Raphael)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -187,12 +169,7 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []()
-* []()
-* []()
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
@@ -214,15 +191,7 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
-[Laravel-url]: https://laravel.com
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
-[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com 
+[Tauri]: https://img.shields.io/badge/tauri-%2324C8DB.svg?style=for-the-badge&logo=tauri&logoColor=%23FFFFFF
+[Tauri-url]: https://tauri.app/
+[Threejs]: https://img.shields.io/badge/threejs-black?style=for-the-badge&logo=three.js&logoColor=white
+[Threejs-url]: https://threejs.org/
