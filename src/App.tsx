@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import Animation from "./Animation";
 
 function App() {
+  const animation = new Animation();
+
   return (
-    <div>hey</div>
+    <div></div>
   );
 }
 
