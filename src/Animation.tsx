@@ -26,19 +26,30 @@ export default class Animation {
         this.cubes = []
 
         this.init()
+
+        // Resize canvas on window resize
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('sun') as HTMLCanvasElement;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+        });
     }
 
     init() {
+        const canvas = document.getElementById('sun') as HTMLCanvasElement
+
         this.scene = new THREE.Scene()
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 
-        this.renderer = new THREE.WebGLRenderer()
+        this.renderer = new THREE.WebGLRenderer({ canvas: canvas })
         
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight)
         
-        document.body.appendChild(this.renderer.domElement)
-
         // this.camera.position.setZ(30);
         // this.camera.position.setX(-3);
 
@@ -123,7 +134,6 @@ export default class Animation {
     }
 
     animate() {
-        requestAnimationFrame(this.animate.bind(this))
         
         this.core.rotation.x += 0.01
         this.core.rotation.y += 0.01
@@ -150,5 +160,6 @@ export default class Animation {
         // this.controls.update();
 
         this.renderer.render(this.scene, this.camera)
+        requestAnimationFrame(this.animate.bind(this))
     }
 }

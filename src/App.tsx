@@ -1,10 +1,15 @@
+import { useEffect } from "react";
 import Animation from "./Animation";
 
 function App() {
-  const animation = new Animation();
+  useEffect(() => {
+    new Animation();
+  }, []);
 
   return (
-    <div></div>
+    <div>
+      <canvas id="sun"/>
+    </div>
   );
 }
 
