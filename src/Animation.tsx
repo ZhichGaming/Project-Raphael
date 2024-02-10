@@ -18,8 +18,10 @@ export default class Animation {
 
     // Constants
     numLines = 30;
-    numCubes = 15;
+    numCubes = 18;
+    cubeLength = 0.08;
     cubeRotationSpeed = 0.001;
+    cubeCircleRadius = 0.8;
 
     constructor() {
         this.lines = []
@@ -70,7 +72,7 @@ export default class Animation {
     }
 
     createCore() {
-        const geometry = new THREE.IcosahedronGeometry(1, 0)
+        const geometry = new THREE.IcosahedronGeometry(1.5, 0)
         const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
         this.core = new THREE.Mesh(geometry, material)
         this.scene.add(this.core)
@@ -112,7 +114,7 @@ export default class Animation {
     createCubes() {
         for (var i = 0; i < this.numCubes; i++) {
             // Create cube geometry
-            var geometry = new THREE.BoxGeometry(0.05, 0.05, 0.05);
+            var geometry = new THREE.BoxGeometry(this.cubeLength, this.cubeLength, this.cubeLength);
 
             // Create a cube material
             var material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF });
@@ -122,9 +124,8 @@ export default class Animation {
 
             // Set position of the cube to form a circle around the core
             var angle = (i / this.numCubes) * Math.PI * 2;
-            var radius = 0.5;
-            cube.position.x = Math.cos(angle) * radius;
-            cube.position.y = Math.sin(angle) * radius;
+            cube.position.x = Math.cos(angle) * this.cubeCircleRadius;
+            cube.position.y = Math.sin(angle) * this.cubeCircleRadius;
 
             this.cubes.push(cube);
 
@@ -134,7 +135,6 @@ export default class Animation {
     }
 
     animate() {
-        
         this.core.rotation.x += 0.01
         this.core.rotation.y += 0.01
 
@@ -149,9 +149,8 @@ export default class Animation {
             cube.rotation.y += 0.01;
 
             var angle = (i / this.numCubes + this.cubeRotationState) * Math.PI * 2;
-            var radius = 0.5;
-            cube.position.x = Math.cos(angle) * radius;
-            cube.position.y = Math.sin(angle) * radius;
+            cube.position.x = Math.cos(angle) * this.cubeCircleRadius;
+            cube.position.y = Math.sin(angle) * this.cubeCircleRadius;
         });
 
         this.cubeRotationState += this.cubeRotationSpeed;
