@@ -62,8 +62,8 @@ export default class Animation {
         this.createLines()
         this.createCubes()
 
-        const greenLight = new THREE.PointLight(0x00ffaa, 100000, 5, 1)
-        greenLight.position.set(0, 0, 0.5)
+        const greenLight = new THREE.PointLight(0xffffff, 100000, 5, 1)
+        greenLight.position.set(0, 0, 0.1)
         this.scene.add( greenLight );
 
         this.camera.position.z = 5
@@ -127,7 +127,7 @@ export default class Animation {
             var geometry = new THREE.BoxGeometry(this.cubeLength, this.cubeLength, this.cubeLength);
 
             // Create a cube material
-            var material = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1});
+            var material = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.25});
 
             // Create a cube mesh
             var cube = new THREE.Mesh(geometry, material);
