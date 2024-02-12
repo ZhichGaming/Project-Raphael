@@ -1,9 +1,15 @@
-import { useState } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import { useEffect } from "react";
+import Animation from "./Animation";
 
 function App() {
+  useEffect(() => {
+    new Animation();
+  }, []);
+
   return (
-    <div>hey</div>
+    <div>
+      <canvas id="sun"/>
+    </div>
   );
 }
 

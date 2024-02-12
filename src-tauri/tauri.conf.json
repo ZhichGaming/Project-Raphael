@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "Project-Raphael",
+    "productName": "Project Raphael",
     "version": "../package.json"
   },
   "tauri": {
