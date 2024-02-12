@@ -62,7 +62,7 @@ export default class Animation {
         this.createLines()
         this.createCubes()
 
-        const greenLight = new THREE.PointLight(0x00ff00, 100000, 3, 1)
+        const greenLight = new THREE.PointLight(0x00ffaa, 100000, 5, 1)
         greenLight.position.set(0, 0, 0.5)
         this.scene.add( greenLight );
 
@@ -82,8 +82,8 @@ export default class Animation {
     }
 
     createCore() {
-        const geometry = new THREE.SphereGeometry(0.5 , 256, 128)
-        const material = new THREE.MeshPhongMaterial( { color: 0xffffff, wireframe: true, emissive: 0xffffff, emissiveIntensity: 1 } );
+        const geometry = new THREE.SphereGeometry(0.35 , 32, 16)
+        const material = new THREE.MeshPhongMaterial( { color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1 } );
         this.core = new THREE.Mesh(geometry, material)
         this.scene.add(this.core)
     }
@@ -92,7 +92,6 @@ export default class Animation {
     getRandomRotationMatrix() {
         var axis = new THREE.Vector3(Math.random(), Math.random(), Math.random()).normalize();
         var angle = Math.random() * Math.PI * 2;
-        console.log(axis, angle)
         var matrix = new THREE.Matrix4().makeRotationAxis(axis, angle);
         return matrix;
     }
@@ -109,15 +108,11 @@ export default class Animation {
 
             // Create a cylinder geometry
             var cylinderGeometry = new THREE.CylinderGeometry(0.005, 0, 20, 32);
-            const material = new THREE.MeshPhongMaterial({ color: 0x0000ff, emissive: 0x0000ff, emissiveIntensity: 0.1 }); 
+            const material = new THREE.MeshPhongMaterial({ color: 0x000000}); 
             const cylinder = new THREE.Mesh( cylinderGeometry, material );
 
             // Apply a random rotation to each line
             cylinder.applyMatrix4(this.getRandomRotationMatrix());
-
-            var angle = (i / this.numLines) * Math.PI * 2;
-            cylinder.position.x = Math.cos(angle) * 0.00001;
-            cylinder.position.y = Math.sin(angle) * 0.00001;
 
             this.lines.push(cylinder);
 
@@ -157,7 +152,6 @@ export default class Animation {
 
         this.lines.forEach(function (line) {
             line.rotation.z += 0.01;
-            console.log(line.rotation.z)
         });
 
         this.cubes.forEach((cube, i) => {
