@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { color } from 'three/examples/jsm/nodes/Nodes.js'
 
 export default class Animation {
     // Scene and configuration
