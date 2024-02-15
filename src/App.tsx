@@ -1,16 +1,19 @@
 import { useEffect } from "react";
 import Animation from "./Animation";
+import MainMenu from "./main/MainMenu";
+
+export let animation: Animation;
 
 function App() {
-  useEffect(() => {
-    new Animation();
-  }, []);
+	useEffect(() => {
+		animation = new Animation();
+	}, []);
 
-  return (
-    <div>
-      <canvas id="sun"/>
-    </div>
-  );
+	return (
+		<div>
+			<MainMenu />
+		</div>
+	);
 }
 
 export default App;
