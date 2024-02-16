@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Animation from "./Animation";
-import MainMenu from "./main/MainMenu";
+import DefaultMenu from "./main/DefaultMenu";
 
 export let animation: Animation;
 
@@ -11,7 +11,7 @@ function App() {
 
 	return (
 		<div>
-			<MainMenu />
+			<DefaultMenu />
 		</div>
 	);
 }

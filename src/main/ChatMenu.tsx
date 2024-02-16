@@ -1,3 +1,5 @@
+import "../styles/ChatMenu.css";
+
 export default function ChatMenu({ setPageState }: { setPageState: (pageState: string) => void }) {
     return (
         <div>

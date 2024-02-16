@@ -168,6 +168,6 @@ export default class Animation {
         // this.controls.update();
 
         this.renderer.render(this.scene, this.camera)
-        requestAnimationFrame(this.animate.bind(this))
+        //requestAnimationFrame(this.animate.bind(this))
     }
 }

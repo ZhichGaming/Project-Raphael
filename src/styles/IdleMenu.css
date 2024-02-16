@@ -1,0 +1,11 @@
+#start {
+    height: 20px;
+    text-align: center;
+    width: 300px;
+    position: absolute;
+    left: 50%;
+    margin-left: -150px;
+    top: 90%;
+    margin-top: -10px;
+    color: white;
+}
