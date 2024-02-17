@@ -2,6 +2,7 @@ import { BaseDirectory, createDir, exists, readDir, readTextFile, writeFile } fr
 import generateUUID from "../utils/GenerateUUID";
 import { Command } from '@tauri-apps/api/shell'
 import { appDataDir } from "@tauri-apps/api/path";
+import { invoke } from "@tauri-apps/api/tauri";
 
 class PluginsSystem {
     plugins: Plugin[];
@@ -66,7 +67,7 @@ class PluginsSystem {
                         plugin.scriptType = scriptFile.name?.substring(scriptFile.name.lastIndexOf('.') + 1);
 
                         console.warn("Remember to remove this function call from the constructor. It is unsafe.")
-                        plugin.executeScript();
+                        await plugin.executeScript();
                     }
                 }
             }
@@ -175,13 +176,13 @@ class Plugin {
         }
     }
 
-    executeScript() {
+    async executeScript() {
         if (this.scriptType === 'js') {
             this.executeJS();
         } else if (this.scriptType === 'py') {
-            this.executePython();
+            await this.executePython();
         } else if (this.scriptType === 'sh') {
-            this.executeShellScript();
+            await this.executeShellScript();
         }
     }
 
@@ -194,10 +195,32 @@ class Plugin {
         this.process();
     }
 
-    executePython() {
+    // To test. 
+    async executePython() {
+        if (!this.content) { console.error('Script missing'); return; }
+        if (this.scriptType !== 'py') { console.error('Trying to execute a script using Python that is not in Python!'); return; }
+
+        let pythonExists = false;
+
+        await invoke("check_for_python3").then((response: any) => {
+            pythonExists = response;
+        });
+
+        if (!pythonExists) {
+            console.error('Python 3 is not installed');
+            return;
+        }
+
+        this.process = invoke("execute_python_script", { script: this.content })
+        await this.process.then((response: any) => console.log(response));
     }
 
-    executeShellScript() {
+    async executeShellScript() {
+        if (!this.content) { console.error('Script missing'); return; }
+        if (this.scriptType !== 'sh') { console.error('Trying to execute a script using Shell that is not a Shell script!'); return; }
+
+        this.process = invoke("execute_shell_script", { script: this.content })
+        await this.process.then((response: any) => console.log(response));
     }
 }
 
