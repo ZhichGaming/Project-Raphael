@@ -1,17 +1,25 @@
 import { BaseDirectory, createDir, exists, readDir, readTextFile, writeFile } from "@tauri-apps/api/fs";
-import generateUUID from "../utils/GenerateUUID";
-import { Command } from '@tauri-apps/api/shell'
+import generateUUID from "../utils/generateUUID";
 import { appDataDir } from "@tauri-apps/api/path";
 import { invoke } from "@tauri-apps/api/tauri";
+import { setGitHubRateLimits } from "../utils/githubRateLimits";
 
 class PluginsSystem {
     plugins: Plugin[];
-
+    pluginSource: PluginSource;
+    
     constructor() {
         this.plugins = [];
+        // The default source is the debug branch for now.
+        this.pluginSource = new PluginSource("ZhichGaming", "Project-Raphael-Plugins", "debug");
 
         // Constructors don't support async function calls, so I ommited the async keyword. I don't know how it will affect the code.
-        this.importPluginsFromLocalDirectory();
+        this.importPlugins();
+    }
+
+    async importPlugins() {
+        await this.importPluginsFromLocalDirectory();
+        await this.importPluginsFromGitHub(this.pluginSource);
     }
 
     async importPluginsFromLocalDirectory() {
@@ -66,8 +74,9 @@ class PluginsSystem {
                         plugin.content = script;
                         plugin.scriptType = scriptFile.name?.substring(scriptFile.name.lastIndexOf('.') + 1);
 
-                        console.warn("Remember to remove this function call from the constructor. It is unsafe.")
-                        await plugin.executeScript();
+                        // For debugging purposes.
+                        // console.warn("Remember to remove this function call from the constructor. It is unsafe.")
+                        // await plugin.executeScript();
                     }
                 }
             }
@@ -76,29 +85,99 @@ class PluginsSystem {
         }
     }
 
-    async importPluginsFromGitHub(username: string, repository: string) {
+    async importPluginsFromGitHub(source: PluginSource) {
         try {
-            const response = await fetch(`https://api.github.com/repos/${username}/${repository}/contents/plugins`);
+            const response = await fetch(source.getURL("plugins"));
             const data = await response.json();
 
-            for (const item of data) {
-                if (item.type === 'file' && item.name.endsWith('.js')) {
-                    const pluginName = item.name.replace('.js', '');
-                    const pluginSource = await this.getPluginSourceURL(username, repository, item.path);
-                    const plugin = new Plugin(pluginName, generateUUID(), undefined, pluginSource);
+            const githubRequestsLeft = parseInt(response.headers.get('X-RateLimit-Remaining') ?? '0');
+            const githubRequestsReset = new Date(parseInt(response.headers.get('X-RateLimit-Reset') ?? '0') * 1000);
+            setGitHubRateLimits(githubRequestsLeft, githubRequestsReset);
 
-                    await plugin.fetchScript();
+            // Plugins are stored in a directory called 'plugins' in the root of the GitHub repository normally.
+            // This is the default behavior if the path is not specified.
+            // A plugin is a directory with a script file and an info file.
+            for (const item of data.filter((item: any) => item.type === 'dir')) {
+                const pluginDirectory = "plugins/" + item.name;
+                const pluginFiles = await fetch(source.getURL(pluginDirectory));
+                const pluginData = await pluginFiles.json();
 
-                    this.plugins.push(plugin);
+                const infoFile = pluginData.find((item: any) => item.name === 'info.json');
+                const scriptFile = pluginData.find((item: any) => item.name.startsWith('script'));
+
+                let infoData: any = undefined;
+
+                if (infoFile) {
+                    const info = await fetch(this.getPluginSourceURL(`${pluginDirectory}/${infoFile.name}`));
+                    infoData = await info.json();
                 }
+
+                let plugin: Plugin;
+
+                if (scriptFile) {
+                    const script = await fetch(this.getPluginSourceURL(`${pluginDirectory}/${scriptFile.name}`));
+                    const scriptData = await script.text();
+
+                    plugin = new Plugin(
+                        infoData?.name ?? "Unknown", 
+                        infoData?.id ?? generateUUID(), 
+                        undefined,
+                        source.getURL(pluginDirectory),
+                        scriptFile.name.substring(scriptFile.name.lastIndexOf('.') + 1),
+                        scriptData
+                    );
+                } else {
+                    plugin = new Plugin(
+                        infoData?.name ?? "Unknown", 
+                        infoData?.id ?? generateUUID(),
+                        undefined,
+                        source.getURL(pluginDirectory),
+                    );
+                }
+
+                this.plugins.push(plugin);
+
+                // For debugging purposes.
+                // console.warn("Remember to remove this function call from the constructor. It is unsafe.")
+                // await plugin.executeScript();
             }
         } catch (error) {
             console.error('Error importing plugins from GitHub:', error);
         }
     }
 
-    getPluginSourceURL(username: string, repository: string, path: string) {
-        return `https://raw.githubusercontent.com/${username}/${repository}/master/${path}`
+    getPluginSourceURL(path: string) {
+        return `https://raw.githubusercontent.com/${this.pluginSource.username!}/${this.pluginSource.repository!}/${this.pluginSource.branch!}/${path}`
+    }
+}
+
+/**
+ * A class that represents a source of plugins.
+ * Assumes that the plugins are stored in a directory called 'plugins' in the root of the GitHub repository if unspecified.
+ */
+class PluginSource {
+    // Information
+    username?: string;
+    repository?: string;
+    branch?: string;
+
+    constructor(username?: string, repository?: string, branch?: string) {
+        this.username = username;
+        this.repository = repository;
+        this.branch = branch;
+    }
+
+    getURL(path?: string) {
+        if (!this.username || !this.repository || !this.branch) {
+            console.error('Plugin source is missing information');
+            return '';
+        }
+
+        if (!path) {
+            return `https://api.github.com/repos/${this.username}/${this.repository}/contents?ref=${this.branch}`;
+        }
+
+        return `https://api.github.com/repos/${this.username}/${this.repository}/contents/${path}?ref=${this.branch}`;
     }
 }
 
@@ -106,6 +185,7 @@ class Plugin {
     // Information
     name: string;
     id: string;
+    version?: string;
 
     // Sources
     path?: string;
@@ -118,12 +198,18 @@ class Plugin {
     // The process that is running the script (?)
     process?: any;
 
-    constructor(name: string, id: string, path?: string, scriptFilename?: string, remoteSource?: string, scriptType?: string, content?: string) {
+    constructor(
+        name: string, 
+        id: string, 
+        path?: string, 
+        remoteSource?: string, 
+        scriptType?: string, 
+        content?: string
+    ) {     
         this.name = name;
         this.id = id;
         this.path = path;
         this.remoteSource = remoteSource;
-        this.scriptFilename = scriptFilename;
         this.scriptType = scriptType;
         this.content = content;
 
@@ -195,7 +281,6 @@ class Plugin {
         this.process();
     }
 
-    // To test. 
     async executePython() {
         if (!this.content) { console.error('Script missing'); return; }
         if (this.scriptType !== 'py') { console.error('Trying to execute a script using Python that is not in Python!'); return; }
