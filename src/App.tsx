@@ -15,6 +15,10 @@ function App() {
 		invoke("import_plugins").then((result) => {
 			console.log(result);
 		});
+
+		// invoke("execute_startup_script", { pluginId: "test" }).then((result) => {
+		// 	console.log(result);
+		// });
 	}, []);
 
 	return (

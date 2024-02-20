@@ -34,15 +34,13 @@ async fn import_plugins(app_handle: tauri::AppHandle) -> Result<String, String> 
 }
 
 #[tauri::command]
-async fn execute_startup_script(app_handle: tauri::AppHandle, plugin_id: String) -> Result<String, String> {
-    // let mut plugin_manager = PLUGIN_MANAGER.lock().await;
-    // let plugin = plugin_manager.execute_startup_script(&plugin_id);
-    // let result = plugin_manager.execute_startup_script(&plugin);
-    // match result {
-    //     Ok(result) => Ok(result),
-    //     Err(err) => Err(err.to_string()),
-    // }
-    Ok("".to_string())
+async fn execute_startup_script(plugin_id: String) -> Result<String, String> {
+    let plugin_manager = PLUGIN_MANAGER.lock().await;
+    let result = plugin_manager.execute_startup_script_from_id(&plugin_id).await;
+    match result {
+        Ok(result) => Ok(result.into()),
+        Err(err) => Err(err.to_string().into()),
+    }
 }
 
 #[tauri::command]

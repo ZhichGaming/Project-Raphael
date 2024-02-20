@@ -220,6 +220,15 @@ pub mod plugin_manager {
             };
             // println!("{:?}", plugin);
 
+            // match self.execute_startup_script(&plugin).await {
+            //     Ok(output) => {
+            //         println!("Startup script output: {}", output);
+            //     },
+            //     Err(err) => {
+            //         println!("Error executing startup script: {}", err);
+            //     }
+            // }
+
             Ok(plugin)
         }
 
@@ -228,9 +237,25 @@ pub mod plugin_manager {
         }
 
         /**
+         * Executes the startup script of the plugin from the plugin id.
+         */
+        pub async fn execute_startup_script_from_id(&self, plugin_id: &str) -> Result<String, PluginError> {
+            let plugin = match self.plugins.iter().find(|plugin| plugin.id == plugin_id) {
+                Some(plugin) => plugin,
+                None => {
+                    return Err(PluginError {
+                        message: format!("Plugin with id {} not found.", plugin_id),
+                    });
+                }
+            };
+
+            self.execute_startup_script(&plugin).await
+        }
+
+        /**
          * Executes the startup script of the plugin.
          */
-        pub async fn execute_startup_script(&self, plugin: &Plugin) -> Result<String, PluginError> {
+        async fn execute_startup_script(&self, plugin: &Plugin) -> Result<String, PluginError> {
             if plugin.startup_script.is_none() {
                 return Err(PluginError {
                     message: format!("Plugin {} has no startup script.", plugin.name),
