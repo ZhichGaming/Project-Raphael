@@ -14,7 +14,7 @@ class PluginsSystem {
         this.pluginSource = new PluginSource("ZhichGaming", "Project-Raphael-Plugins", "debug");
 
         // Constructors don't support async function calls, so I ommited the async keyword. I don't know how it will affect the code.
-        this.importPlugins();
+        // this.importPlugins();
     }
 
     async importPlugins() {
@@ -191,7 +191,6 @@ class Plugin {
     path?: string;
     remoteSource?: string; // raw GitHub URL
 
-    scriptFilename?: string;
     scriptType?: string; // Values: 'py', 'js', 'sh'
     content?: string;
 

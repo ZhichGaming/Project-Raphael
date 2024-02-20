@@ -2007,10 +2007,12 @@ dependencies = [
 name = "project-raphael"
 version = "0.0.0"
 dependencies = [
+ "lazy_static",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
+ "tokio",
 ]
 
 [[package]]
