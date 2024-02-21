@@ -5,7 +5,7 @@
 pub mod plugin_manager {
     use std::{fmt, path};
 
-    use serde::Deserialize;
+    use serde::{Deserialize, Serialize};
 
     #[derive(Debug)]
     pub struct PluginError {
@@ -19,7 +19,7 @@ pub mod plugin_manager {
     }
 
     pub struct PluginManager {
-        plugins: Vec<Box<Plugin>>,
+        pub plugins: Vec<Box<Plugin>>,
     }
 
     impl PluginManager {
@@ -32,6 +32,7 @@ pub mod plugin_manager {
         }
 
         pub async fn import_plugins(&mut self, plugins_dir: &path::PathBuf) {
+            self.plugins.clear();
             self.import_plugins_from_local(plugins_dir).await;
             self.import_plugins_from_remote().await;
         }
@@ -300,22 +301,56 @@ pub mod plugin_manager {
             }
         }
 
+        pub async fn execute_function_script_from_id(&self, plugin_id: &str, function_path: &str) -> Result<String, PluginError> {
+            let plugin = match self.plugins.iter().find(|plugin| plugin.id == plugin_id) {
+                Some(plugin) => plugin,
+                None => {
+                    return Err(PluginError {
+                        message: format!("Plugin with id {} not found.", plugin_id),
+                    });
+                }
+            };
+
+            let function = match plugin.function_scripts.as_ref().unwrap().iter().find(|script| script.path.as_ref().unwrap() == function_path) {
+                Some(function) => function,
+                None => {
+                    return Err(PluginError {
+                        message: format!("Plugin {} has no function script at path {}.", plugin.name, function_path),
+                    });
+                }
+            };
+
+            self.execute_function_script(&plugin, function).await
+        }
+
         /**
          * Executes a function script of the plugin.
          */
-        pub async fn execute_function_script(&self, plugin: &Plugin, plugin_script: PluginScript) -> Result<String, PluginError> {
-            if plugin_script.script.is_none() {
-                return Err(PluginError {
-                    message: format!("Plugin {} has no function script at path {}.", plugin.name, plugin_script.path.unwrap()),
-                });
-            }
+        pub async fn execute_function_script(&self, plugin: &Plugin, plugin_script: &PluginScript) -> Result<String, PluginError> {
+            let unwrapped_plugin_script_path = match plugin_script.path {
+                Some(ref path) => path,
+                None => {
+                    return Err(PluginError {
+                        message: format!("Plugin {} has no such function script.", plugin.name),
+                    });
+                }
+            };
 
-            let script_code = &plugin_script.script.unwrap();
+            let unwrapped_plugin_script_script = match plugin_script.script {
+                Some(ref script) => script,
+                None => {
+                    return Err(PluginError {
+                        message: format!("Plugin {} has no function script at path {}.", plugin.name, unwrapped_plugin_script_path),
+                    });
+                }
+            };
+
+            let script_code = unwrapped_plugin_script_script;
             let engine = match plugin_script.engine {
                 Some(ref engine) => engine,
                 None => {
                     return Err(PluginError {
-                        message: format!("Plugin {}'s function script at path {} does not have a type.", plugin.name, plugin_script.path.unwrap()),
+                        message: format!("Plugin {}'s function script at path {} does not have a type.", plugin.name, unwrapped_plugin_script_path),
                     });
                 }
             };
@@ -329,12 +364,12 @@ pub mod plugin_manager {
                 }
                 "sh" => {
                     return Err(PluginError {
-                        message: format!("Plugin {}'s function script {} is a shell script, which is not allowed.", plugin.name, plugin_script.path.unwrap()),
+                        message: format!("Plugin {}'s function script {} is a shell script, which is not allowed.", plugin.name, unwrapped_plugin_script_path),
                     });
                 }
                 _ => {
                     return Err(PluginError {
-                        message: format!("Plugin {}'s function script at path {} has an unsupported type.", plugin.name, plugin_script.path.unwrap()),
+                        message: format!("Plugin {}'s function script at path {} has an unsupported type.", plugin.name, unwrapped_plugin_script_path),
                     });
                 }
             }
@@ -388,7 +423,7 @@ pub mod plugin_manager {
         }
     }
     
-    #[derive(Debug, Deserialize)]
+    #[derive(Debug, Serialize, Deserialize)]
     pub struct Plugin {
         // Information
         /// The name of the plugin.
@@ -409,7 +444,7 @@ pub mod plugin_manager {
         function_scripts: Option<Vec<PluginScript>>,
     }
 
-    #[derive(Debug, Deserialize)]
+    #[derive(Debug, Serialize, Deserialize)]
     pub struct PluginScript {
         path: Option<String>,
         script: Option<String>,
