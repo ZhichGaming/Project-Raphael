@@ -30,7 +30,7 @@
         "center": true,
         "minWidth": 1000,
         "minHeight": 600,
-        "decorations": false
+        "decorations": true
       }
     ],
     "security": {

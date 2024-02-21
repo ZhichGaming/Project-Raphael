@@ -1,7 +1,7 @@
 #sun {
     z-index: 1;
     position: fixed;
-    left: 25%;
+    transform: translateX(-23%);
 }
 
 #chat {
