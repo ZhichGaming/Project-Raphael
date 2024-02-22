@@ -12,6 +12,14 @@ export let pluginManager: PluginManager;
 function App() {
 	const [plugins, setPlugins] = useState<RaphaelPlugin[]>([]);
 
+	const onPluginStartupClick = (plugin: RaphaelPlugin) => {
+		if (!plugin.startupScript) {
+			return;
+		}
+
+		pluginManager.executeStartupScript(plugin.id);
+	}
+
 	const onPluginClick = (plugin: RaphaelPlugin, path?: string) => {
 		if (!path) {
 			return;
@@ -41,7 +49,7 @@ function App() {
 							<h2>{plugin.name}</h2>
 							{
 								plugin.startupScript && (
-									<button onClick={() => onPluginClick(plugin, plugin.startupScript?.path)}>Run Startup Script</button>
+									<button onClick={() => onPluginStartupClick(plugin)}>Run Startup Script</button>
 								)
 							}
 							{
