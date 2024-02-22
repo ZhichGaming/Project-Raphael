@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod plugin_manager;
-use plugin_manager::plugin_manager::PluginManager;
+use plugin_manager::PluginManager;
 use lazy_static::lazy_static;
 use tokio::sync::Mutex;
 
