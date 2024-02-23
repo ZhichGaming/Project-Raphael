@@ -539,7 +539,7 @@ impl PluginManager {
 
     /**
      * Executes the startup script of the plugin.
-        */
+     */
     async fn execute_startup_script(&self, plugin: &Plugin) -> Result<String, PluginError> {
         if plugin.startup_script.is_none() {
             return Err(PluginError {
@@ -609,7 +609,7 @@ impl PluginManager {
 
     /**
      * Executes a function script of the plugin.
-        */
+     */
     pub async fn execute_function_script(&self, plugin: &Plugin, plugin_script: &PluginScript) -> Result<String, PluginError> {
         let unwrapped_plugin_script_path = match plugin_script.path {
             Some(ref path) => path,
@@ -661,7 +661,7 @@ impl PluginManager {
 
     /**
      * Executes a python script from the plugin. 
-        */
+     */
     async fn execute_python_script(&self, script: &str) -> Result<String, PluginError> {
         let output = std::process::Command::new("python3")
             .args(["-c", script])
@@ -676,8 +676,8 @@ impl PluginManager {
 
     /**
      * Executes a JavaScript script from the plugin. 
-        * This implementation might change in the future to support manipulating the DOM.
-        */
+     * This implementation might change in the future to support manipulating the DOM.
+     */
     async fn execute_javascript_script(&self, script: &str) -> Result<String, PluginError> {
         let output = std::process::Command::new("node")
             .args(["-e", script])
@@ -692,8 +692,8 @@ impl PluginManager {
 
     /**
      * Executes a shell script from the plugin. 
-        * This has been temporarily disabled due to security concerns.
-        */
+     * This has been temporarily disabled due to security concerns.
+     */
     async fn execute_shell_script(&self, script: &str) -> Result<String, PluginError> {
         let output = std::process::Command::new("sh")
             .args(["-c", script])
