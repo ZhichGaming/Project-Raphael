@@ -4,6 +4,7 @@
 
 use std::{fmt, path};
 use serde::{Deserialize, Serialize};
+use reqwest;
 
 #[derive(Debug)]
 pub struct PluginError {
@@ -18,13 +19,23 @@ impl fmt::Display for PluginError {
 
 pub struct PluginManager {
     pub plugins: Vec<Box<Plugin>>,
+    pub sources: Vec<Box<PluginSource>>,
 }
 
 impl PluginManager {
     pub fn new() -> PluginManager {
-        let manager = PluginManager {
+        let mut manager = PluginManager {
             plugins: Vec::new(),
+            sources: Vec::new(),
         };
+
+        let debug_source: PluginSource = PluginSource {
+            username: Some("ZhichGaming".to_string()),
+            repository: Some("Project-Raphael-Plugins".to_string()),
+            branch: Some("debug".to_string()),
+        };
+
+        manager.sources.push(Box::new(debug_source));
 
         return manager;
     }
@@ -32,7 +43,7 @@ impl PluginManager {
     pub async fn import_plugins(&mut self, plugins_dir: &path::PathBuf) {
         self.plugins.clear();
         self.import_plugins_from_local(plugins_dir).await;
-        self.import_plugins_from_remote().await;
+        self.import_plugins_from_remote(plugins_dir).await;
     }
 
     pub async fn import_plugins_from_local(&mut self, plugins_dir: &path::PathBuf) {
@@ -231,13 +242,286 @@ impl PluginManager {
         Ok(plugin)
     }
 
-    pub async fn import_plugins_from_remote(&self) {
-        
+    pub async fn import_plugins_from_remote(&mut self, plugins_dir: &path::PathBuf) {
+        for source in &self.sources {
+            let folder_url = match source.get_folder_url("plugins") {
+                Ok(url) => url,
+                Err(err) => {
+                    println!("Error getting folder URL: {}", err);
+                    continue;
+                }
+            };
+
+            let folder_contents = match reqwest::Client::new().get(&folder_url).header("User-Agent", "Mozilla/5.0").send().await {
+                Ok(response) => response,
+                Err(err) => {
+                    println!("Error getting folder contents: {}", err);
+                    continue;
+                }
+            };
+
+            let folder_contents: String = match folder_contents.text().await {
+                Ok(contents) => contents,
+                Err(err) => {
+                    println!("Error parsing folder contents: {}", err);
+                    continue;
+                }
+            };
+
+            let folder_contents: Vec<serde_json::Value> = match serde_json::from_str(&folder_contents) {
+                Ok(contents) => contents,
+                Err(err) => {
+                    println!("Error parsing folder contents to JSON: {}", err);
+                    continue;
+                }
+            };
+
+            for plugin_folder in folder_contents {
+                let plugin_folder = match plugin_folder.as_object() {
+                    Some(content) => content,
+                    None => {
+                        println!("Error parsing folder content.");
+                        continue;
+                    }
+                };
+
+                let plugin_folder_type = match plugin_folder.get("type") {
+                    Some(content_type) => content_type,
+                    None => {
+                        println!("Error getting folder content type.");
+                        continue;
+                    }
+                };
+
+                let plugin_folder_type = match plugin_folder_type.as_str() {
+                    Some(content_type) => content_type,
+                    None => {
+                        println!("Error parsing folder content type.");
+                        continue;
+                    }
+                };
+
+                if plugin_folder_type != "dir" {
+                    continue;
+                }
+
+                let plugin_folder_name = match plugin_folder.get("name") {
+                    Some(content_name) => content_name,
+                    None => {
+                        println!("Error getting folder content name.");
+                        continue;
+                    }
+                };
+
+                let plugin_folder_name = match plugin_folder_name.as_str() {
+                    Some(content_name) => content_name,
+                    None => {
+                        println!("Error parsing folder content name.");
+                        continue;
+                    }
+                };
+
+                let local_plugin_path = plugins_dir.to_str().unwrap().to_string() + "/" + plugin_folder_name;
+
+                // Check if this plugin is already installed
+                if std::path::Path::new(&local_plugin_path).exists() {
+                    println!("Plugin {} is already installed.", plugin_folder_name);
+                    continue;
+                }
+
+                let plugin_info_url = match source.get_file_url(&("plugins/".to_string() + plugin_folder_name + "/info.json")) {
+                    Ok(url) => url,
+                    Err(err) => {
+                        println!("Error getting plugin info URL: {}", err);
+                        continue;
+                    }
+                };
+
+                let plugin_info = match reqwest::get(&plugin_info_url).await {
+                    Ok(response) => response,
+                    Err(err) => {
+                        println!("Error getting plugin info: {}", err);
+                        continue;
+                    }
+                };
+
+                let plugin_info = match plugin_info.text().await {
+                    Ok(info) => info,
+                    Err(err) => {
+                        println!("Error parsing plugin info: {}", err);
+                        continue;
+                    }
+                };
+
+                let parsed_plugin_info: Plugin = match serde_json::from_str(&plugin_info) {
+                    Ok(info) => info,
+                    Err(err) => {
+                        println!("Error parsing plugin info: {}", err);
+                        continue;
+                    }
+                };
+
+                let plugin_scripts_url = match source.get_folder_url(&("plugins/".to_string() + plugin_folder_name + "/scripts")) {
+                    Ok(url) => url,
+                    Err(err) => {
+                        println!("Error getting plugin URL: {}", err);
+                        continue;
+                    }
+                };
+
+                let plugin_scripts = match reqwest::Client::new().get(&plugin_scripts_url).header("User-Agent", "Mozilla/5.0").send().await {
+                    Ok(response) => response,
+                    Err(err) => {
+                        println!("Error getting plugin scripts: {}", err);
+                        continue;
+                    }
+                };
+
+                let plugin_scripts: String = match plugin_scripts.text().await {
+                    Ok(contents) => contents,
+                    Err(err) => {
+                        println!("Error parsing plugin scripts: {}", err);
+                        continue;
+                    }
+                };
+
+                let plugin_scripts: Vec<serde_json::Value> = match serde_json::from_str(&plugin_scripts) {
+                    Ok(contents) => contents,
+                    Err(err) => {
+                        println!("Error parsing plugin scripts to JSON: {}", err);
+                        continue;
+                    }
+                };
+
+                let mut startup_script: Option<PluginScript> = None;
+
+                let mut function_scripts: Vec<PluginScript> = Vec::new();
+
+                for content in plugin_scripts.iter() {
+                    let content = match content.as_object() {
+                        Some(content) => content,
+                        None => {
+                            println!("Error parsing plugin script.");
+                            continue;
+                        }
+                    };
+
+                    let content_type = match content.get("type") {
+                        Some(content_type) => content_type,
+                        None => {
+                            println!("Error getting plugin script type.");
+                            continue;
+                        }
+                    };
+
+                    let content_type = match content_type.as_str() {
+                        Some(content_type) => content_type,
+                        None => {
+                            println!("Error parsing plugin script type.");
+                            continue;
+                        }
+                    };
+
+                    if content_type == "file" {
+                        let script_file_name = match content.get("name") {
+                            Some(content_name) => content_name,
+                            None => {
+                                println!("Error getting plugin script name.");
+                                continue;
+                            }
+                        };
+
+                        let script_file_name = match script_file_name.as_str() {
+                            Some(content_name) => content_name,
+                            None => {
+                                println!("Error parsing plugin script name.");
+                                continue;
+                            }
+                        };
+
+                        let script_url = match source.get_file_url(&("plugins/".to_string() + plugin_folder_name + "/scripts/" + script_file_name)) {
+                            Ok(url) => url,
+                            Err(err) => {
+                                println!("Error getting plugin script URL: {}", err);
+                                continue;
+                            }
+                        };
+
+                        let script = match reqwest::get(&script_url).await {
+                            Ok(response) => response,
+                            Err(err) => {
+                                println!("Error getting plugin script: {}", err);
+                                continue;
+                            }
+                        };
+
+                        let script = match script.text().await {
+                            Ok(script) => script,
+                            Err(err) => {
+                                println!("Error parsing plugin script: {}", err);
+                                continue;
+                            }
+                        };
+
+                        let script = PluginScript {
+                            path: Some(format!("{}{}{}", &local_plugin_path, "/scripts/", script_file_name)),
+                            script: Some(script),
+                            engine: Some(plugin_folder_name.split('.').last().unwrap().to_string()),
+                        };
+
+                        if script_file_name.starts_with("start") {
+                            startup_script = Some(script);
+                        } else {
+                            function_scripts.push(script);
+                        }
+                    }
+                }
+
+                let plugin = Plugin {
+                    name: parsed_plugin_info.name,
+                    id: parsed_plugin_info.id,
+                    version: parsed_plugin_info.version,
+                    local_path: Some(local_plugin_path),
+                    remote_url: Some(plugin_info_url),
+                    startup_script: startup_script.clone(),
+                    function_scripts: Some(function_scripts.to_vec()),
+                };
+
+                // Save the plugin to the local directory
+                let plugin_dir = plugins_dir.to_str().unwrap().to_string() + "/" + plugin_folder_name;
+                std::fs::create_dir_all(&plugin_dir).unwrap();
+
+                let plugin_info_path = plugin_dir.to_string() + "/info.json";
+                let json_string = serde_json::to_string(&plugin).unwrap();
+                std::fs::write(&plugin_info_path, json_string).unwrap();
+
+                let plugin_scripts_dir = plugin_dir.to_string() + "/scripts";
+                std::fs::create_dir_all(&plugin_scripts_dir).unwrap();
+
+                for script in &function_scripts {
+                    let script_path = script.path.as_ref().unwrap();
+                    let script_path = script_path.split('/').last().unwrap();
+                    let script_path = plugin_scripts_dir.to_string() + "/" + script_path;
+                    std::fs::write(&script_path, script.script.as_ref().unwrap()).unwrap();
+                }
+
+                let startup_script = startup_script.as_ref().unwrap();
+                let startup_script_path = startup_script.path.as_ref().unwrap();
+                let startup_script_path = startup_script_path.split('/').last().unwrap();
+                let startup_script_path = plugin_scripts_dir.to_string() + "/" + startup_script_path;
+
+                std::fs::write(&startup_script_path, startup_script.script.as_ref().unwrap()).unwrap();
+
+                self.plugins.push(Box::new(plugin));
+
+                println!("Plugin {} has been installed.", plugin_folder_name);
+            }
+        }       
     }
 
     /**
      * Executes the startup script of the plugin from the plugin id.
-        */
+     */
     pub async fn execute_startup_script_from_id(&self, plugin_id: &str) -> Result<String, PluginError> {
         let plugin = match self.plugins.iter().find(|plugin| plugin.id == plugin_id) {
             Some(plugin) => plugin,
@@ -422,6 +706,81 @@ impl PluginManager {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct PluginSource {
+    username: Option<String>,
+    repository: Option<String>,
+    branch: Option<String>,
+}
+
+impl PluginSource {
+    pub fn new(username: Option<String>, repository: Option<String>, branch: Option<String>) -> PluginSource {
+        PluginSource {
+            username,
+            repository,
+            branch,
+        }
+    }
+    
+    pub fn get_folder_url(&self, path: &str) -> Result<String, PluginError> {
+        let username = match self.username {
+            Some(ref username) => username,
+            None => {
+                return Err(PluginError {
+                    message: "Username is not set.".to_string(),
+                });
+            }
+        };
+
+        let repository = match self.repository {
+            Some(ref repository) => repository,
+            None => {
+                return Err(PluginError {
+                    message: "Repository is not set.".to_string(),
+                });
+            }
+        };
+
+        let branch_param = match self.branch {
+            Some(ref branch) => format!("?ref={}", branch),
+            None => "".to_string()
+        };
+
+        Ok(format!("https://api.github.com/repos/{}/{}/contents/{}{}", username, repository, path, &branch_param))
+    }
+
+    pub fn get_file_url(&self, path: &str) -> Result<String, PluginError> {
+        let username = match self.username {
+            Some(ref username) => username,
+            None => {
+                return Err(PluginError {
+                    message: "Username is not set.".to_string(),
+                });
+            }
+        };
+
+        let repository = match self.repository {
+            Some(ref repository) => repository,
+            None => {
+                return Err(PluginError {
+                    message: "Repository is not set.".to_string(),
+                });
+            }
+        };
+
+        let branch = match self.branch {
+            Some(ref branch) => branch,
+            None => {
+                return Err(PluginError {
+                    message: "Branch is not set.".to_string(),
+                });
+            }
+        };
+
+        Ok(format!("https://raw.githubusercontent.com/{}/{}/{}/{}", username, repository, branch, path))
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Plugin {
     // Information
     /// The name of the plugin.
@@ -442,7 +801,7 @@ pub struct Plugin {
     function_scripts: Option<Vec<PluginScript>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PluginScript {
     path: Option<String>,
     script: Option<String>,
