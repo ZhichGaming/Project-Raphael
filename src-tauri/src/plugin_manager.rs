@@ -161,9 +161,9 @@ impl PluginManager {
                 filename
             },
             None => {
-                return Err(PluginError {
-                    message: format!("Plugin {} has no startup script.", plugin_info.name),
-                });
+                println!("Plugin {} has no startup script, creating an empty script.", plugin_info.name);
+                // Default script type will be JavaScript.
+                "start.js".to_string()
             }
         };
 
@@ -171,10 +171,12 @@ impl PluginManager {
 
         let startup_script = match std::fs::read_to_string(&startup_script_path) {
             Ok(script) => script,
-            Err(err) => {
-                return Err(PluginError {
-                    message: format!("Error reading plugin: {}", err),
-                });
+            Err(_) => {
+                // Create an empty script at path.
+                std::fs::write(&startup_script_path, "").unwrap();
+
+                // If the startup script is not found, create an empty script.
+                "".to_string()
             }
         };
 
