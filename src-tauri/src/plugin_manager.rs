@@ -2,7 +2,7 @@
 //! It can install, update, and remove plugins.
 //! It can also execute scripts from the plugins.
 
-use std::{fmt, path};
+use std::{fmt, fs, path};
 use serde::{Deserialize, Serialize};
 use reqwest;
 
@@ -91,15 +91,8 @@ impl PluginManager {
     }
 
     async fn import_plugin_from_local(&self, plugin_path: &str) -> Result<Plugin, PluginError> {
-        // I don't know why this has to be mutable, but it does.
-        let mut plugin_script_dir_files = match std::fs::read_dir(plugin_path.to_string() + "/scripts") {
-            Ok(files) => files,
-            Err(err) => {
-                return Err(PluginError {
-                    message: format!("Error reading plugin: {}", err),
-                });
-            }
-        };
+        // Alright so would someone please explain to me why this works and returns the correct files but not when I unwrapped it safely? see commit `716e24f96284aefcf22e94716ff2be5454874d4b`
+        let plugin_script_dir_files: Vec<std::fs::DirEntry> = fs::read_dir(plugin_path.to_string() + "/scripts").unwrap().map(|res| res.unwrap()).collect();
 
         // Import plugin info
         let plugin_info = match std::fs::read_to_string(plugin_path.to_string() + "/info.json") {
@@ -123,37 +116,29 @@ impl PluginManager {
         // Import startup script
         const STARTUP_SCRIPT_PREFIX: &str = "start";
 
-        let startup_script_filename = plugin_script_dir_files.find(|entry| {
-            let entry = match entry {
-                Ok(entry) => entry,
-                Err(_) => return false,
-            };
-
+        let startup_script_filename = plugin_script_dir_files.iter().find(|entry| {
             let entry = entry.file_name();
             let entry = match entry.to_str() {
                 Some(entry) => entry,
                 None => return false,
             };
 
-            entry.starts_with(STARTUP_SCRIPT_PREFIX)
+            if entry.starts_with(STARTUP_SCRIPT_PREFIX) {
+                return true;
+            }
+
+            return false;
         });
 
         let startup_script_filename = match startup_script_filename {
             Some(filename) => {
-                let unwrapped_filename = match filename {
-                    Ok(filename) => filename.file_name(),
-                    Err(err) => {
-                        return Err(PluginError {
-                            message: format!("Error reading plugin: {}", err),
-                        });
-                    }
-                };
+                
 
-                let filename = match unwrapped_filename.to_str() {
+                let filename = match filename.file_name().to_str() {
                     Some(filename) => filename.to_string(),
                     None => {
                         return Err(PluginError {
-                            message: format!("Error reading plugin: Encountered an error while getting {}", unwrapped_filename.to_str().unwrap()),
+                            message: format!("Error reading plugin: Encountered an error while getting {}", filename.file_name().to_str().unwrap()),
                         });
                     }
                 };
@@ -175,7 +160,6 @@ impl PluginManager {
                 // Create an empty script at path.
                 std::fs::write(&startup_script_path, "").unwrap();
 
-                // If the startup script is not found, create an empty script.
                 "".to_string()
             }
         };
@@ -187,24 +171,24 @@ impl PluginManager {
         };
 
         // Import function scripts
-        let function_scripts = plugin_script_dir_files.filter_map(|entry| {
-            let entry = match entry {
-                Ok(entry) => entry,
-                Err(_) => return None,
-            };
-
+        let function_scripts = plugin_script_dir_files.iter().filter_map(|entry| {
             let entry = entry.file_name();
             let entry = match entry.to_str() {
                 Some(entry) => entry,
                 None => return None,
             };
+            
+            if entry == ".DS_Store" {
+                return None;
+            }
 
             if !entry.starts_with(STARTUP_SCRIPT_PREFIX) {
                 let script_path = String::from(plugin_path.to_string() + "/scripts/" + entry);
 
                 let script = match std::fs::read_to_string(&script_path) {
                     Ok(script) => script,
-                    Err(_) => {
+                    Err(err) => {
+                        println!("Error reading script: {}", err);
                         return None;
                     }
                 };
