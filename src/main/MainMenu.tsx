@@ -5,18 +5,18 @@ import SettingsMenu from './SettingsMenu';
 
 export default function MainMenu() {
     // Values: default, chat, settings
-    let [pageState, setPageState] = useState("default");
+    let [pageState, _] = useState("default");
 
     if (pageState === "default") {
-        return <DefaultMenu setPageState={setPageState}/>
+        return <DefaultMenu />
     } else if (pageState === "chat") {
-        return <ChatMenu setPageState={setPageState}/>
+        return <ChatMenu/>
     } else if (pageState === "settings") {
-        return <SettingsMenu setPageState={setPageState}/>
+        return <SettingsMenu/>
     }
 
     // This is a fallback in case the state is invalid.
     return (
-        <DefaultMenu setPageState={setPageState}/>
+        <DefaultMenu/>
     )
 }

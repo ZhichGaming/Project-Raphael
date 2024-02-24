@@ -1,4 +1,4 @@
-export default function ChatMenu({ setPageState }: { setPageState: (pageState: string) => void }) {
+export default function ChatMenu() {
     return (
         <div>
             <canvas id="sun"/>

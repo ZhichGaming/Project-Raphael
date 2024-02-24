@@ -1,4 +1,4 @@
-export default function SettingsMenu({ setPageState }: { setPageState: (pageState: string) => void }) {
+export default function SettingsMenu() {
     return (
         <div>
             <canvas id="sun"/>

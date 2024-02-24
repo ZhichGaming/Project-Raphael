@@ -1,12 +1,12 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 export default class Animation {
     // Scene and configuration
     scene!: THREE.Scene
     camera!: THREE.PerspectiveCamera
     renderer!: THREE.WebGLRenderer
-    controls!: OrbitControls
+    // controls!: OrbitControls
 
     // Objects
     wireframe!: THREE.Mesh
