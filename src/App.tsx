@@ -62,7 +62,7 @@ function App() {
 							{
 								plugin.functionScripts?.map((script: RaphaelPluginScript) => {
 									return (
-										<button key={generateUUID()} onClick={() => onPluginClick(plugin, script.path)}>{plugin.startupScript?.path?.split("/")[plugin.startupScript?.path?.split("/").length-1] ?? "Run Function Script"}</button>
+										<button key={generateUUID()} onClick={() => onPluginClick(plugin, script.path)}>{ script?.path?.split("/")[script?.path?.split("/").length-1] ?? "Run Function Script"}</button>
 									);
 								})
 							}
