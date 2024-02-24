@@ -46,9 +46,9 @@ async fn execute_startup_script(plugin_id: &str) -> Result<String, String> {
 }
 
 #[tauri::command]
-async fn execute_function_script(plugin_id: &str, script_path: &str) -> Result<String, String> {
+async fn execute_function_script(plugin_id: &str, script_path: &str, args: Vec<&str>) -> Result<String, String> {
     let plugin_manager = PLUGIN_MANAGER.lock().await;
-    let result = plugin_manager.execute_function_script_from_id(&plugin_id, &script_path).await;
+    let result = plugin_manager.execute_function_script_from_id(&plugin_id, &script_path, Some(&args)).await;
     match result {
         Ok(result) => Ok(result.into()),
         Err(err) => Err(err.to_string().into()),

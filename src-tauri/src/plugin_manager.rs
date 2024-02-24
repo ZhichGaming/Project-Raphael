@@ -555,10 +555,10 @@ impl PluginManager {
 
         match engine.as_str() {
             "py" => {
-                return self.execute_python_script(script_code).await;
+                return self.execute_python_script(script_code, None).await;
             }
             "js" => {
-                return self.execute_javascript_script(script_code).await;
+                return self.execute_javascript_script(script_code, None).await;
             }
             "sh" => {
                 return Err(PluginError {
@@ -573,7 +573,7 @@ impl PluginManager {
         }
     }
 
-    pub async fn execute_function_script_from_id(&self, plugin_id: &str, function_path: &str) -> Result<String, PluginError> {
+    pub async fn execute_function_script_from_id(&self, plugin_id: &str, function_path: &str, args: Option<&Vec<&str>>) -> Result<String, PluginError> {
         let plugin = match self.plugins.iter().find(|plugin| plugin.id == plugin_id) {
             Some(plugin) => plugin,
             None => {
@@ -592,13 +592,13 @@ impl PluginManager {
             }
         };
 
-        self.execute_function_script(&plugin, function).await
+        self.execute_function_script(&plugin, function, args).await
     }
 
     /**
      * Executes a function script of the plugin.
      */
-    pub async fn execute_function_script(&self, plugin: &Plugin, plugin_script: &PluginScript) -> Result<String, PluginError> {
+    pub async fn execute_function_script(&self, plugin: &Plugin, plugin_script: &PluginScript, args: Option<&Vec<&str>>) -> Result<String, PluginError> {
         let unwrapped_plugin_script_path = match plugin_script.path {
             Some(ref path) => path,
             None => {
@@ -629,10 +629,10 @@ impl PluginManager {
 
         match engine.as_str() {
             "py" => {
-                return self.execute_python_script(script_code).await;
+                return self.execute_python_script(script_code, args).await;
             }
             "js" => {
-                return self.execute_javascript_script(script_code).await;
+                return self.execute_javascript_script(script_code, args).await;
             }
             "sh" => {
                 return Err(PluginError {
@@ -650,9 +650,9 @@ impl PluginManager {
     /**
      * Executes a python script from the plugin. 
      */
-    async fn execute_python_script(&self, script: &str) -> Result<String, PluginError> {
+    async fn execute_python_script(&self, script: &str, args: Option<&Vec<&str>>) -> Result<String, PluginError> {
         let output = std::process::Command::new("python3")
-            .args(["-c", script])
+            .args([["-c", script].as_slice(), args.unwrap_or(&Vec::<&str>::new()).as_slice()].concat())
             .output()
             .expect("failed to execute process");
 
@@ -666,9 +666,9 @@ impl PluginManager {
      * Executes a JavaScript script from the plugin. 
      * This implementation might change in the future to support manipulating the DOM.
      */
-    async fn execute_javascript_script(&self, script: &str) -> Result<String, PluginError> {
+    async fn execute_javascript_script(&self, script: &str, args: Option<&Vec<&str>>) -> Result<String, PluginError> {
         let output = std::process::Command::new("node")
-            .args(["-e", script])
+            .args([["-e", script].as_slice(), args.unwrap_or(&Vec::<&str>::new()).as_slice()].concat())
             .output()
             .expect("failed to execute process");
 

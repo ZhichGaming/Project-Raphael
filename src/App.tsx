@@ -11,6 +11,7 @@ export let pluginManager: PluginManager;
 
 function App() {
 	const [plugins, setPlugins] = useState<RaphaelPlugin[]>([]);
+	const [parameters, setParameters] = useState<string>("");
 
 	const onPluginStartupClick = (plugin: RaphaelPlugin) => {
 		if (!plugin.startupScript) {
@@ -25,7 +26,11 @@ function App() {
 			return;
 		}
 
-		pluginManager.executeFunctionScript(plugin.id, path);
+		pluginManager.executeFunctionScript(plugin.id, path, parameters.split(" "));
+	}
+
+	const handleParametersChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+		setParameters(event.target.value);
 	}
 	
 	useEffect(() => {
@@ -42,6 +47,8 @@ function App() {
 	return (
 		<div>
 			<MainMenu />
+			{/* function script parameters */}
+			<textarea value={parameters} onChange={handleParametersChange} placeholder="Function Script Parameters" />
 			{
 				plugins.map((plugin) => {
 					return (

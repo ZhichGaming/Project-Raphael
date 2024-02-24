@@ -34,8 +34,8 @@ export default class PluginManager {
         });
     }
 
-    async executeFunctionScript(pluginId: string, scriptPath: string) {
-        await invoke("execute_function_script", { pluginId: pluginId, scriptPath: scriptPath }).then((result: unknown) => {
+    async executeFunctionScript(pluginId: string, scriptPath: string, args?: string[]) {
+        await invoke("execute_function_script", { pluginId: pluginId, scriptPath: scriptPath, args: Array.from(args ?? []) }).then((result: unknown) => {
             console.log(result);
         }).catch((error) => {
             console.error(error);
