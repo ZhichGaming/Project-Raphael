@@ -506,12 +506,17 @@ impl PluginManager {
                     std::fs::write(&script_path, script.script.as_ref().unwrap()).unwrap();
                 }
 
-                let startup_script = startup_script.as_ref().unwrap();
-                let startup_script_path = startup_script.path.as_ref().unwrap();
-                let startup_script_path = startup_script_path.split('/').last().unwrap();
-                let startup_script_path = plugin_scripts_dir.to_string() + "/" + startup_script_path;
+                if !startup_script.is_none() {
+                    let startup_script = startup_script.as_ref().unwrap();
+                    let startup_script_path = startup_script.path.as_ref().unwrap();
+                    let startup_script_path = startup_script_path.split('/').last().unwrap();
+                    let startup_script_path = plugin_scripts_dir.to_string() + "/" + startup_script_path;
 
-                std::fs::write(&startup_script_path, startup_script.script.as_ref().unwrap()).unwrap();
+                    std::fs::write(&startup_script_path, startup_script.script.as_ref().unwrap()).unwrap();
+                } else {
+                    let startup_script_path = plugin_scripts_dir.to_string() + "/start.js";
+                    std::fs::write(&startup_script_path, "").unwrap();
+                }
 
                 self.plugins.push(Box::new(plugin));
 
