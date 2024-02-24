@@ -494,8 +494,7 @@ impl PluginManager {
                 std::fs::create_dir_all(&plugin_dir).unwrap();
 
                 let plugin_info_path = plugin_dir.to_string() + "/info.json";
-                let json_string = serde_json::to_string(&plugin).unwrap();
-                std::fs::write(&plugin_info_path, json_string).unwrap();
+                std::fs::write(&plugin_info_path, plugin_info).unwrap();
 
                 let plugin_scripts_dir = plugin_dir.to_string() + "/scripts";
                 std::fs::create_dir_all(&plugin_scripts_dir).unwrap();
