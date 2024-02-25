@@ -1,12 +1,25 @@
 import * as THREE from 'three'
+import { EffectComposer, OutputPass, RenderPass, ShaderPass, UnrealBloomPass } from 'three/examples/jsm/Addons.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { vertexShader } from './shaders/VertexShader'
+import { fragmentShader } from './shaders/FragmentShader'
 
 export default class Animation {
     // Scene and configuration
     scene!: THREE.Scene
     camera!: THREE.PerspectiveCamera
     renderer!: THREE.WebGLRenderer
+    finalComposer!: EffectComposer
+    renderScene!: RenderPass
+    outputPass!: OutputPass
     controls!: OrbitControls
+
+    // Bloom
+    bloomComposer!: EffectComposer
+    bloomPass!: UnrealBloomPass
+    mixPass!: ShaderPass
+    bloomLayer!: THREE.Layers
+    materials!: THREE.Material[]
 
     // Objects
     wireframe!: THREE.Mesh
@@ -18,7 +31,7 @@ export default class Animation {
     cubeRotationState: number = 0
 
     // Constants
-    numLines = 30;
+    numLines = 15;
     numCubes = 16;
     cubeLength = 0.08;
     cubeRotationSpeed = 0.001;
@@ -27,6 +40,7 @@ export default class Animation {
     constructor() {
         this.lines = []
         this.cubes = []
+        this.materials = []
 
         this.init()
 
@@ -52,6 +66,61 @@ export default class Animation {
         
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight)
+
+        this.renderScene = new RenderPass(this.scene, this.camera);
+        this.bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+
+        this.bloomComposer = new EffectComposer( this.renderer );
+        this.bloomComposer.renderToScreen = false;
+        this.bloomComposer.addPass(this.renderScene);
+        this.bloomComposer.addPass(this.bloomPass);
+        
+        this.mixPass = new ShaderPass(
+            new THREE.ShaderMaterial({
+                uniforms: {
+                    baseTexture: { value: null },
+                    bloomTexture: { value: this.bloomComposer.renderTarget2.texture }
+                },
+                vertexShader: vertexShader,
+                fragmentShader: fragmentShader,
+                defines: {}
+            }), "baseTexture"
+        );
+        this.mixPass.needsSwap = true;
+
+        this.outputPass = new OutputPass();
+
+        this.finalComposer = new EffectComposer( this.renderer );
+
+        this.finalComposer.addPass(this.renderScene);
+        this.finalComposer.addPass(this.mixPass);
+        this.finalComposer.addPass(this.outputPass);
+
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = Math.pow(0.68, 5.0);
+        this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+        
+        const BLOOM_SCENE = 1;
+        this.bloomLayer = new THREE.Layers();
+        this.bloomLayer.set(BLOOM_SCENE);
+
+        // const raycaster = new THREE.Raycaster();
+        // const mouse = new THREE.Vector2();
+
+        // // When the mouse is clicked, make the object that was clicked on glow.
+        // this.renderer.domElement.addEventListener('pointerdown', (event) => {
+        //     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        //     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+        //     raycaster.setFromCamera(mouse, this.camera);
+
+        //     const intersects = raycaster.intersectObjects(this.scene.children);
+
+        //     if (intersects.length > 0) {
+        //         const object = intersects[0].object;
+        //         object.layers.toggle(BLOOM_SCENE);
+        //     }
+        // });
         
         // this.camera.position.setZ(30);
         // this.camera.position.setX(-3);
@@ -61,9 +130,10 @@ export default class Animation {
         this.createLines()
         this.createCubes()
 
-        const greenLight = new THREE.PointLight(0xffffff, 100000, 5, 1)
-        greenLight.position.set(0, 0, 0.1)
-        this.scene.add( greenLight );
+        const pointLight = new THREE.PointLight(0xffffff, 500, 5, 1)
+        pointLight.position.set(0, 0, 0)
+        this.scene.add( pointLight );
+
 
         this.camera.position.z = 5
 
@@ -74,9 +144,11 @@ export default class Animation {
     }
 
     createWireframe() {
-        const geometry = new THREE.IcosahedronGeometry(1.5, 0)
+        const geometry = new THREE.IcosahedronGeometry(2, 0)
         const material = new THREE.MeshPhongMaterial({ color: 0xffffff, wireframe: true , emissive: 0xffffff, emissiveIntensity: 1  })
         this.wireframe = new THREE.Mesh(geometry, material)
+        this.wireframe.position.set(0, 0, -2)
+
         this.scene.add(this.wireframe)
     }
 
@@ -85,6 +157,8 @@ export default class Animation {
         const material = new THREE.MeshPhongMaterial( { color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1 } );
         this.core = new THREE.Mesh(geometry, material)
         this.scene.add(this.core)
+
+        this.core.layers.enable(1);
     }
 
     
@@ -106,8 +180,8 @@ export default class Animation {
             // geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 
             // Create a cylinder geometry
-            var cylinderGeometry = new THREE.CylinderGeometry(0.005, 0, 20, 32);
-            const material = new THREE.MeshPhongMaterial({ color: 0x000000}); 
+            var cylinderGeometry = new THREE.CylinderGeometry(0.002, 0, 20, 32);
+            const material = new THREE.MeshPhongMaterial({ color: 0x000000, emissive: 0xffffff, emissiveIntensity: 1 }); 
             const cylinder = new THREE.Mesh( cylinderGeometry, material );
 
             // Apply a random rotation to each line
@@ -117,6 +191,9 @@ export default class Animation {
 
             // Add the line to the scene
             this.scene.add(cylinder);
+
+            // Uncomment to make the lines glow.
+            cylinder.layers.toggle(1);
         }
     }
 
@@ -126,7 +203,7 @@ export default class Animation {
             var geometry = new THREE.BoxGeometry(this.cubeLength, this.cubeLength, this.cubeLength);
 
             // Create a cube material
-            var material = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.25});
+            var material = new THREE.MeshStandardMaterial({ color: 0x000000 });
 
             // Create a cube mesh
             var cube = new THREE.Mesh(geometry, material);
@@ -140,6 +217,23 @@ export default class Animation {
 
             // Add the cube to the scene
             this.scene.add(cube);
+
+            // Uncomment to make the cubes glow.
+            // cube.layers.toggle(1);
+        }
+    }
+
+    nonBloomed(obj: any) {
+        if (obj.isMesh && this.bloomLayer.test(obj.layers) === false) {
+            this.materials[obj.uuid] = obj.material;
+            obj.material = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        }
+    }
+
+    restoreMaterial(obj: any) {
+        if (this.materials[obj.uuid]) {
+            obj.material = this.materials[obj.uuid];
+            delete this.materials[obj.uuid];
         }
     }
 
@@ -167,7 +261,13 @@ export default class Animation {
         // Uncomment for debugging and navigating using mouse
         // this.controls.update();
 
-        this.renderer.render(this.scene, this.camera)
+        // this.renderer.render(this.scene, this.camera)
+
+        this.scene.traverse(this.nonBloomed.bind(this));
+        this.bloomComposer.render();
+        this.scene.traverse(this.restoreMaterial.bind(this));
+        this.finalComposer.render();
+
         requestAnimationFrame(this.animate.bind(this))
     }
 }
