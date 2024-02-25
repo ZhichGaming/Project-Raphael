@@ -31,7 +31,7 @@ export default class Animation {
     cubeRotationState: number = 0
 
     // Constants
-    numLines = 15;
+    numLines = 30;
     numCubes = 16;
     cubeLength = 0.08;
     cubeRotationSpeed = 0.001;
@@ -244,7 +244,7 @@ export default class Animation {
         this.core.rotation.y += 0.01
 
         this.lines.forEach(function (line) {
-            line.rotation.z += 0.01;
+            line.rotation.z += 0.005;
         });
 
         this.cubes.forEach((cube, i) => {
