@@ -31,7 +31,7 @@ export default class Animation {
     cubeRotationState: number = 0
 
     // Constants
-    numLines = 30;
+    numLines = 20;
     numCubes = 16;
     cubeLength = 0.08;
     cubeRotationSpeed = 0.001;
@@ -179,8 +179,8 @@ export default class Animation {
             // ]);
             // geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 
-            // Create a cylinder geometry
-            var cylinderGeometry = new THREE.CylinderGeometry(0.002, 0, 3/Math.random(), 32);
+            // Second length should be 0.005 when in sudo mode.
+            var cylinderGeometry = new THREE.CylinderGeometry(0.005, 0, 3/Math.random(), 32);
             const material = new THREE.MeshPhongMaterial({ color: 0x000000, emissive: 0xffffff, emissiveIntensity: 1 }); 
             const cylinder = new THREE.Mesh( cylinderGeometry, material );
 
