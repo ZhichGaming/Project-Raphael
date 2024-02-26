@@ -1,9 +1,8 @@
-import { useState } from "react";
-import { useTransition, animated } from "react-spring"
+import { useEffect, useState } from "react";
+import { useTransition, animated, useSpring } from "react-spring"
 import "../styles/main.css";
 
 export default function DefaultMenu() {
-
     const [pageState, setPageState] = useState("idle");
 	const idle = useTransition(pageState, {
         from: { y: -(window.innerHeight * 0.4 ), scale: 0},
@@ -22,12 +21,18 @@ export default function DefaultMenu() {
         enter: { x: 0, y: 0, scale: 1},
         leave: { x: -(window.innerWidth/2 - 20), y: -(window.innerHeight/2 - 20), scale: 0}
 	});
+    
+    const [sun, sunApi] = useSpring(() => ({
+        from: { x: 0 },
+    }));
 
-    const sun = useTransition(pageState, {
-        from: {x: 0},
-        enter: { x: -(window.innerWidth * 0.25)},
-        leave: { x: (window.innerWidth * 0.25)}
-	});
+    useEffect(() => {
+        if (pageState == "chat") {
+            sunApi.start({ x: -(window.innerWidth * 0.25) });
+        } else {
+            sunApi.start({ x: 0 });
+        }
+    }, [pageState]);
 
     return (
 		<div>
@@ -55,17 +60,15 @@ Arcu odio ut sem nulla. Tellus molestie nunc non blandit massa enim nec dui. Luc
 
             {options((style, item) =>
                 item == "options" ? <animated.div id="options" style={style}>
-                <div id="settings" className="options" onClick={() => setPageState("idle")}> Settings </div>
-                <div id="compact" className="options" onClick={() => setPageState("chat")}> Compact Mode </div>
+                <div id="settings" className="options" onClick={() => setPageState("settings")}> Settings </div>
+                <div id="compact" className="options"> Compact Mode </div>
                 <div id="exit" className="options"> Exit </div>
             </animated.div> : ""
             )}
 
-            {sun((style, item) =>
-                item == "chat" ? <animated.div style={style}>eeee
-                    <canvas id="sun" onClick={() => pageState != "chat" ? setPageState("chat") : ""}/>
-                </animated.div> : ""
-            )}
+            <animated.div style={sun}>
+                <canvas id="sun" onClick={() => pageState != "chat" ? setPageState("chat") : ""}/>
+            </animated.div>
 		</div>
 	);
 }
