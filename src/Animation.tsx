@@ -153,7 +153,8 @@ export default class Animation {
     }
 
     createCore() {
-        const geometry = new THREE.SphereGeometry(0.35 , 32, 16)
+        const geometry = new THREE.IcosahedronGeometry(0.35)
+        // const geometry = new THREE.SphereGeometry(0.35, 32, 16)
         const material = new THREE.MeshPhongMaterial( { color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1 } );
         this.core = new THREE.Mesh(geometry, material)
         this.scene.add(this.core)
@@ -203,7 +204,7 @@ export default class Animation {
             var geometry = new THREE.BoxGeometry(this.cubeLength, this.cubeLength, this.cubeLength);
 
             // Create a cube material
-            var material = new THREE.MeshStandardMaterial({ color: 0x000000 });
+            var material = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveIntensity: 0.5 });
 
             // Create a cube mesh
             var cube = new THREE.Mesh(geometry, material);
