@@ -53,7 +53,7 @@ Arcu odio ut sem nulla. Tellus molestie nunc non blandit massa enim nec dui. Luc
             )}
 
 			{idle((style, item) => 
-                item == "idle" ? <animated.div id="start" style={style} > Press anywhere to wake Raphael up </animated.div> : ""
+                item == "idle" ? <animated.div id="start" style={style} > Press to Start. </animated.div> : ""
             )}
 
             <img id="menu" src="src/public/menu.svg" alt="Menu" onClick={() => setPageState("options")}></img>
@@ -62,7 +62,7 @@ Arcu odio ut sem nulla. Tellus molestie nunc non blandit massa enim nec dui. Luc
                 item == "options" ? <animated.div id="options" style={style}>
                 <div id="settings" className="options" onClick={() => setPageState("settings")}> Settings </div>
                 <div id="compact" className="options"> Compact Mode </div>
-                <div id="exit" className="options" onClick={() => setPageState("idle")}> Shut down Raphael </div>
+                <div id="exit" className="options" onClick={() => setPageState("idle")}> Stop AI </div>
             </animated.div> : ""
             )}
 
