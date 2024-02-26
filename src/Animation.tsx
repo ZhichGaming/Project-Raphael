@@ -47,10 +47,10 @@ export default class Animation {
         // Resize canvas on window resize
         window.addEventListener('resize', () => {
             const canvas = document.getElementById('sun') as HTMLCanvasElement;
-            canvas.width = window.innerWidth;
+            canvas.width = window.innerWidth * 1.5;
             canvas.height = window.innerHeight;
 
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.renderer.setSize(window.innerWidth * 1.5, window.innerHeight);
             this.camera.aspect = window.innerWidth / window.innerHeight;
             this.camera.updateProjectionMatrix();
         });
@@ -60,15 +60,15 @@ export default class Animation {
         const canvas = document.getElementById('sun') as HTMLCanvasElement
 
         this.scene = new THREE.Scene()
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth * 1.5 / window.innerHeight, 0.1, 1000)
 
         this.renderer = new THREE.WebGLRenderer({ canvas: canvas })
         
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setSize(window.innerWidth, window.innerHeight)
+        this.renderer.setSize(window.innerWidth * 1.5, window.innerHeight)
 
         this.renderScene = new RenderPass(this.scene, this.camera);
-        this.bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        this.bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth * 1.5, window.innerHeight), 1.5, 0.4, 0.85);
 
         this.bloomComposer = new EffectComposer( this.renderer );
         this.bloomComposer.renderToScreen = false;
