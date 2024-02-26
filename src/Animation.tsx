@@ -144,7 +144,7 @@ export default class Animation {
     }
 
     createWireframe() {
-        const geometry = new THREE.IcosahedronGeometry(2, 0)
+        const geometry = new THREE.IcosahedronGeometry(2.2, 0)
         const material = new THREE.MeshPhongMaterial({ color: 0xffffff, wireframe: true , emissive: 0xffffff, emissiveIntensity: 1  })
         this.wireframe = new THREE.Mesh(geometry, material)
         this.wireframe.position.set(0, 0, -2)
@@ -180,7 +180,7 @@ export default class Animation {
             // geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 
             // Create a cylinder geometry
-            var cylinderGeometry = new THREE.CylinderGeometry(0.002, 0, 20, 32);
+            var cylinderGeometry = new THREE.CylinderGeometry(0.002, 0, 3/Math.random(), 32);
             const material = new THREE.MeshPhongMaterial({ color: 0x000000, emissive: 0xffffff, emissiveIntensity: 1 }); 
             const cylinder = new THREE.Mesh( cylinderGeometry, material );
 
