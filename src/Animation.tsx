@@ -51,7 +51,7 @@ export default class Animation {
             canvas.height = window.innerHeight;
 
             this.renderer.setSize(window.innerWidth * 1.5, window.innerHeight);
-            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.aspect = window.innerWidth * 1.5 / window.innerHeight;
             this.camera.updateProjectionMatrix();
         });
     }
