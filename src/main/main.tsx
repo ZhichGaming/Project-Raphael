@@ -62,7 +62,7 @@ Arcu odio ut sem nulla. Tellus molestie nunc non blandit massa enim nec dui. Luc
                 item == "options" ? <animated.div id="options" style={style}>
                 <div id="settings" className="options" onClick={() => setPageState("settings")}> Settings </div>
                 <div id="compact" className="options"> Compact Mode </div>
-                <div id="exit" className="options" onClick={() => setPageState("idle")}> Exit </div>
+                <div id="exit" className="options" onClick={() => setPageState("idle")}> Shut down Raphael </div>
             </animated.div> : ""
             )}
 
