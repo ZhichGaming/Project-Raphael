@@ -21,7 +21,7 @@ export default function DefaultMenu() {
         enter: { x: 0, y: 0, scale: 1},
         leave: { x: -(window.innerWidth/2 - 20), y: -(window.innerHeight/2 - 20), scale: 0}
 	});
-    
+
     const [sun, sunApi] = useSpring(() => ({
         from: { x: 0 },
     }));
@@ -44,7 +44,6 @@ Arcu odio ut sem nulla. Tellus molestie nunc non blandit massa enim nec dui. Luc
                 <div id="question">
                     <div id="text">
                         <div id="words" role="textbox" aria-multiline="true" data-can-focus="true" data-slate-editor="true" data-slate-node="value" contentEditable="true"></div>
-                       
                     </div>
                     <div id="microphone">
                         <img id="icon" src="src/public/white-microphone.svg" alt="Microphone"></img>
@@ -52,6 +51,7 @@ Arcu odio ut sem nulla. Tellus molestie nunc non blandit massa enim nec dui. Luc
                 </div>
             </animated.div> : ""
             )}
+
 			{idle((style, item) => 
                 item == "idle" ? <animated.div id="start" style={style} > Press anywhere to wake Raphael up </animated.div> : ""
             )}
