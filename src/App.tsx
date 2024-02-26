@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Animation from "./Animation";
-import MainMenu from "./main/MainMenu";
+import DefaultMenu from "./main/main";
 import PluginsSystem from "./plugins/PluginsSystem";
 import PluginManager, { RaphaelPlugin, RaphaelPluginScript } from "./plugins/PluginManager";
 import generateUUID from "./utils/generateUUID";
@@ -46,7 +46,7 @@ function App() {
 
 	return (
 		<div>
-			<MainMenu />
+			<DefaultMenu />
 			{/* function script parameters */}
 			<textarea value={parameters} onChange={handleParametersChange} placeholder="Function Script Parameters" />
 			{
