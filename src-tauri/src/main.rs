@@ -2,8 +2,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod plugin_manager;
+use std::{intrinsics::roundf64, path::Display};
+
 use plugin_manager::PluginManager;
 use lazy_static::lazy_static;
+use tauri::Monitor;
 use tokio::sync::Mutex;
 
 lazy_static! {
@@ -23,27 +26,25 @@ fn main() {
 }
 
 #[tauri::command]
-async fn open_compact_window(app: tauri::AppHandle) {
+async fn open_compact_window(&self, app: tauri::AppHandle) {
     
     let file_path = "./compact-index.html";
-    
-    let _settings_window = tauri::WindowBuilder::new(
+
+    let screen: &tauri::PhysicalSize<u32> = Monitor::size(&self);
+
+    let width = screen.width as i32;
+
+    let new_width = width as f64;
+
+    let _compact_window = tauri::WindowBuilder::new(
         &app,
         "compact", /* the unique window label */
         tauri::WindowUrl::App(file_path.into()),
-    );
-
-    let screen = self.current_monitor()?.unwrap();
-    let screen_position = screen.position();
-    let screen_size = PhysicalSize::<i32> {
-        width: screen.size().width as i32,
-        height: screen.size().height as i32,
-    };
-
-    .position(screen_position.x + (screen_size.width - 500), screen_position.y);
-    .inner_size(500, 300);
-    .title("compact-window");
-    .build();
+    )
+    .position(new_width - 500.0, 0.0)
+    .inner_size(500.0, 300.0)
+    .title("compact-window")
+    .build()
     .unwrap();
 
 }
