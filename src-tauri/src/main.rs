@@ -15,10 +15,37 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             import_plugins,
             execute_startup_script,
-            execute_function_script
+            execute_function_script,
+            open_compact_window
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[tauri::command]
+async fn open_compact_window(app: tauri::AppHandle) {
+    
+    let file_path = "./compact-index.html";
+    
+    let _settings_window = tauri::WindowBuilder::new(
+        &app,
+        "compact", /* the unique window label */
+        tauri::WindowUrl::App(file_path.into()),
+    );
+
+    let screen = self.current_monitor()?.unwrap();
+    let screen_position = screen.position();
+    let screen_size = PhysicalSize::<i32> {
+        width: screen.size().width as i32,
+        height: screen.size().height as i32,
+    };
+
+    .position(screen_position.x + (screen_size.width - 500), screen_position.y);
+    .inner_size(500, 300);
+    .title("compact-window");
+    .build();
+    .unwrap();
+
 }
 
 #[tauri::command]

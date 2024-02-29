@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTransition, animated, useSpring } from "react-spring"
-import "../styles/main.css";
+import "../styles/default.css";
+import { invoke } from '@tauri-apps/api/tauri'
 
 export default function DefaultMenu() {
     const [pageState, setPageState] = useState("idle");
@@ -61,7 +62,7 @@ Arcu odio ut sem nulla. Tellus molestie nunc non blandit massa enim nec dui. Luc
             {options((style, item) =>
                 item == "options" ? <animated.div id="options" style={style}>
                 <div id="settings" className="options" onClick={() => setPageState("settings")}> Settings </div>
-                <div id="compact" className="options"> Compact Mode </div>
+                <div id="compact" className="options" onClick={() => invoke("open_compact_window")}> Compact Mode </div>
                 <div id="exit" className="options" onClick={() => setPageState("idle")}> Stop AI </div>
             </animated.div> : ""
             )}
