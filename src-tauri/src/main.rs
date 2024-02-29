@@ -28,18 +28,21 @@ fn main() {
 async fn open_compact_window(app: tauri::AppHandle) {
     let file_path = "./compact-index.html";
 
-    let screen: tauri::PhysicalSize<u32> = app.get_window("main").unwrap().inner_size().unwrap();
-    println!("screen size: {:?}", screen.width);
+    let current_window = app.get_window("main").unwrap();
+    let screen = current_window.current_monitor().unwrap().unwrap();
+    let screen_size = screen.size();  
 
-    let width = screen.width as i32 as f64;
+    println!("screen size: {:?}", screen_size.width);
+
+    let width = screen_size.width as i32 as f64;
 
     let _compact_window = tauri::WindowBuilder::new(
         &app,
         "compact", /* the unique window label */
         tauri::WindowUrl::App(file_path.into()),
     )
-    .position(width - 500.0, 0.0)
     .inner_size(500.0, 300.0)
+    .position(width*1.4, 0.0)
     .title("compact-window")
     .build()
     .unwrap();

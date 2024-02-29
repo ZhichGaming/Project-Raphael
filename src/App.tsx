@@ -12,7 +12,6 @@ function App() {
 	useEffect(() => {
 		animation = new Animation();
 		pluginManager = new PluginManager();
-		// invoke("open_compact_window")
 	}, []);
 
 	return (
