@@ -34,15 +34,18 @@ async fn open_compact_window(app: tauri::AppHandle) {
 
     println!("screen size: {:?}", screen_size.width);
 
-    let width = screen_size.width as i32 as f64;
+    let screen_width = screen_size.width as i32 as f64;
+
+    const WINDOW_WIDTH: f64 = 500.0;
+    const WINDOW_HEIGHT: f64 = 300.0;
 
     let _compact_window = tauri::WindowBuilder::new(
         &app,
         "compact", /* the unique window label */
         tauri::WindowUrl::App(file_path.into()),
     )
-    .inner_size(500.0, 300.0)
-    .position(width*1.4, 0.0)
+    .inner_size(WINDOW_WIDTH, WINDOW_HEIGHT)
+    .position(screen_width-WINDOW_WIDTH-300.0, 0.0) // We need to substract 300 from the width to get the x position for some reason.
     .title("compact-window")
     .build()
     .unwrap();
