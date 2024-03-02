@@ -1,16 +1,14 @@
 import { useState } from "react";
+import Default from "./compact/default";
 import { invoke } from "@tauri-apps/api/tauri";
 import React from "react";
 
 function CompactApp() {
-     
-    return (
-      <div className="container">
-        <h1>Window</h1>
+  return (
+		<div>
+			<Default />
+		</div>
+	);
+}
   
-        <button>Hello</button>
-      </div>
-    );
-  }
-  
-  export default CompactApp;
+export default CompactApp;

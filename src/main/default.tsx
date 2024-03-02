@@ -3,7 +3,7 @@ import { useTransition, animated, useSpring } from "react-spring"
 import "../styles/default.css";
 import { invoke } from '@tauri-apps/api/tauri'
 
-export default function DefaultMenu() {
+export default function Default() {
     const [pageState, setPageState] = useState("idle");
 	const idle = useTransition(pageState, {
         from: { y: -(window.innerHeight * 0.4 ), scale: 0},

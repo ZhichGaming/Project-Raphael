@@ -1,0 +1,12 @@
+body {
+    background-color: aqua;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+#box {
+    height: 100px;
+    width: 100px;
+    background-color: red;
+    border-radius: 1;
+}

@@ -37,17 +37,21 @@ async fn open_compact_window(app: tauri::AppHandle) {
     let screen_width = screen_size.width as i32 as f64;
 
     const WINDOW_WIDTH: f64 = 500.0;
-    const WINDOW_HEIGHT: f64 = 300.0;
+    const WINDOW_HEIGHT: f64 = 150.0;
 
     let width_ratio = if cfg!(target_os = "macos") { 1.125 } else { 1.0 };
 
-    let _compact_window = tauri::WindowBuilder::new(
+    let _compact_window: tauri::Window = tauri::WindowBuilder::new(
         &app,
         "compact", /* the unique window label */
         tauri::WindowUrl::App(file_path.into()),
     )
     .inner_size(WINDOW_WIDTH, WINDOW_HEIGHT)
     .position(screen_width/width_ratio-WINDOW_WIDTH, 0.0) // We need to substract 300 from the width to get the x position for some reason.
+    .decorations(false)
+    .resizable(false)
+    .transparent(true)
+    .always_on_top(true)
     .title("compact-window")
     .build()
     .unwrap();

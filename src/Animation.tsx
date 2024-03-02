@@ -269,6 +269,6 @@ export default class Animation {
         this.scene.traverse(this.restoreMaterial.bind(this));
         this.finalComposer.render();
 
-        //requestAnimationFrame(this.animate.bind(this))
+        requestAnimationFrame(this.animate.bind(this))
     }
 }
